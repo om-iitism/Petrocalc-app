@@ -13,15 +13,14 @@ st.markdown("""
 
 st.sidebar.header("Input Parameters")
 
-# Input Fields
-phi = st.sidebar.number_input("Porosity (\u03d5) [fraction, e.g., 0.25]", min_value=0.0, max_value=1.0, value=0.25)
-rt = st.sidebar.number_input("Total Resistivity (Rt) [ohm·m]", min_value=0.01, value=10.0)
-rw = st.sidebar.number_input("Water Resistivity (Rw) [ohm·m]", min_value=0.001, value=0.05)
+# Input Fields# --- User Inputs ---
+phi_percent = st.slider("Porosity (ϕ) in %:", min_value=0, max_value=50, step=1)
+rt = st.slider("Total Resistivity (Rt) in ohm·m:", min_value=0, max_value=200, step=1)
+rw = st.number_input("Formation Water Resistivity (Rw) in ohm·m:", min_value=0.0, step=0.1, format="%.1f")
 
-# Archie Constants
-a = st.sidebar.number_input("Archie 'a' constant", value=1.0)
-m = st.sidebar.number_input("Archie 'm' exponent", value=2.0)
-n = st.sidebar.number_input("Archie 'n' exponent", value=2.0)
+# Convert porosity from % to fraction
+phi = phi_percent / 100
+
 
 # Calculations
 rwa = phi**2 * rt
