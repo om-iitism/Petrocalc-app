@@ -1,19 +1,11 @@
 import streamlit as st
-import numpy as np
 
 st.set_page_config(page_title="Petrophysical Calculator", layout="centered")
-st.title("Petrophysical Calculator")
 
-st.markdown("""
-**Calculates:**
-- Apparent Water Resistivity (Rwa)
-- Archie Water Saturation (Sw)
-- Compares Rwa to given Rw
-""")
+st.title("🛢️ Petrophysical Calculator")
+st.subheader("Calculate Apparent Water Resistivity and Water Saturation")
 
-st.sidebar.header("Input Parameters")
-
-# Input Fields# --- User Inputs ---
+# --- User Inputs ---
 phi_percent = st.slider("Porosity (ϕ) in %:", min_value=0, max_value=50, step=1)
 rt = st.slider("Total Resistivity (Rt) in ohm·m:", min_value=0, max_value=200, step=1)
 rw = st.number_input("Formation Water Resistivity (Rw) in ohm·m:", min_value=0.0, step=0.1, format="%.1f")
@@ -21,24 +13,28 @@ rw = st.number_input("Formation Water Resistivity (Rw) in ohm·m:", min_value=0.
 # Convert porosity from % to fraction
 phi = phi_percent / 100
 
+# --- Constants ---
+a = 1
+m = 2
+n = 2
 
-# Calculations
-rwa = phi**2 * rt
-try:
-    sw = ((a / (phi ** m)) * (rw / rt)) ** (1/n)
-except ZeroDivisionError:
-    sw = np.nan
+# --- Calculate Results ---
+if phi > 0 and rt > 0:
+    rw_app = phi**2 * rt
 
-# Display Outputs
-st.subheader("Results")
-st.metric("Apparent Water Resistivity (Rwa)", f"{rwa:.3f} ohm·m")
-st.metric("Water Saturation (Sw)", f"{sw:.3f}")
+    try:
+        sw = ((rw / (phi**m * rt)) ** (1 / n)) if rw > 0 else None
 
-# Interpretation
-st.subheader("Interpretation")
-if abs(rwa - rw) / rw < 0.2:
-    st.success("Rwa is close to Rw: likely water-bearing zone.")
-elif rwa > rw:
-    st.warning("Rwa is significantly higher than Rw: possible hydrocarbon presence.")
+        # --- Output ---
+        st.markdown("### 📊 Results")
+        st.success(f"**Apparent Water Resistivity (Rw_app):** {rw_app:.4f} ohm·m")
+        if sw is not None:
+            st.success(f"**Water Saturation (Sw):** {sw:.4f} (fraction)")
+    except Exception as e:
+        st.error(f"Error: {e}")
 else:
-    st.info("Rwa is lower than Rw: check inputs or zone may be unusual.")
+    st.warning("Please enter valid values for porosity and Rt.")
+
+# --- Footer ---
+st.markdown("---")
+st.caption("Built with ❤️ using Streamlit")
