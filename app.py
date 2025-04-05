@@ -7,7 +7,7 @@ st.subheader("Calculate Apparent Water Resistivity and Water Saturation")
 
 # --- User Inputs ---
 phi_percent = st.slider("Porosity (ϕ) in %:", min_value=0, max_value=50, step=1)
-rt = st.slider("Total Resistivity (Rt) in ohm·m:", min_value=0, max_value=200, step=1)
+rt = st.slider("Total Resistivity (Rt) in ohm·m:", min_value=0, max_value=50, step=1)
 rw = st.number_input("Formation Water Resistivity (Rw) in ohm·m:", min_value=0.0, step=0.1, format="%.1f")
 
 # Convert porosity from % to fraction
