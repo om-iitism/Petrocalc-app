@@ -28,7 +28,7 @@ st.header("Input Parameters")
 phi_percent = st.slider("Porosity (%)", min_value=0.0, max_value=35.0, value=15.0, step=0.1)
 phi = phi_percent / 100
 
-rt = st.number_input("Total Resistivity (Rt, Ohm·m)", min_value=0.2, max_value=200.0, value=0.2, step=0.01, format="%.2f")
+rt = st.number_input("Total Resistivity (Rt, Ohm·m)", min_value=0.2, max_value=200.0, value=0.2, step=0.1, format="%.2f")
 rw = st.number_input("Formation Water Resistivity (Rw, Ohm·m)", min_value=0.01, max_value=10.0, value=0.1, step=0.01, format="%.2f")
 
 # Optional Archie parameters
