@@ -1,40 +1,32 @@
 import streamlit as st
+import numpy as np
 
-st.set_page_config(page_title="Petrophysical Calculator", layout="centered")
+st.title("Petrophysics Calculator")
+st.subheader("Calculate Apparent Water Resistivity (Rwa) and Water Saturation (Sw)")
 
-st.title("🛢️ Petrophysical Calculator")
-st.subheader("Calculate Apparent Water Resistivity and Water Saturation")
+# Input: Porosity (%)
+porosity_percent = st.slider("Porosity (%)", min_value=0.0, max_value=35.0, value=15.0, step=0.1)
 
-# --- User Inputs ---
-phi_percent = st.slider("Porosity (ϕ) in %:", min_value=0, max_value=50, step=1)
-rt = st.slider("Total Resistivity (Rt) in ohm·m:", min_value=0, max_value=50, step=1)
-rw = st.number_input("Formation Water Resistivity (Rw) in ohm·m:", min_value=0.0, step=0.1, format="%.1f")
+# Input: Total Resistivity (Rt) - Logarithmic scale
+rt_log = st.slider("Total Resistivity (Rt, Ohm·m)", min_value=np.log10(0.2), max_value=np.log10(200.0), value=np.log10(20.0))
+rt = 10 ** rt_log
 
-# Convert porosity from % to fraction
-phi = phi_percent / 100
+# Input: Formation Water Resistivity (Rw)
+rw = st.number_input("Formation Water Resistivity (Rw, Ohm·m)", min_value=0.01, max_value=10.0, value=0.1, step=0.01, format="%.2f")
 
-# --- Constants ---
-a = 1
-m = 2
-n = 2
+# Convert Porosity to fraction
+phi = porosity_percent / 100.0
 
-# --- Calculate Results ---
-if phi > 0 and rt > 0:
-    rw_app = phi**2 * rt
+# Calculate Rwa and Sw
+rwa = rt * phi**2
+sw = np.sqrt(rwa / rw)
+sw = min(max(sw, 0.0), 1.0)
 
-    try:
-        sw = ((rw / (phi**m * rt)) ** (1 / n)) if rw > 0 else None
+# Results
+st.markdown("### Results:")
+st.write(f"**Apparent Water Resistivity (Rwa):** {rwa:.4f} Ohm·m")
+st.write(f"**Water Saturation (Sw):** {sw:.4f} (fraction)")
 
-        # --- Output ---
-        st.markdown("### 📊 Results")
-        st.success(f"**Apparent Water Resistivity (Rw_app):** {rw_app:.4f} ohm·m")
-        if sw is not None:
-            st.success(f"**Water Saturation (Sw):** {sw:.4f} (fraction)")
-    except Exception as e:
-        st.error(f"Error: {e}")
-else:
-    st.warning("Please enter valid values for porosity and Rt.")
-
-# --- Footer ---
+# Notes
 st.markdown("---")
-st.caption("Built with ❤️ using Streamlit")
+st.info("Formulas used:  \nRwa = Rt × φ²  \nSw = √(Rwa / Rw), limited between 0 and 1")
